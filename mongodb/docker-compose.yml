@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    deploy:
+      resources:
+        limits:
+          memory: 400M
+    networks:
+      - my-network
+    volumes:
+      - mongodb:/data/db
+        #- ./scripts/products.json:/products.json
+        #- ./scripts/init-data.js:/init-data.js
+        #- ./scripts/mongo-init.sh:/mongo-init.sh
+    healthcheck:
+      test: mongosh --eval 'db.runCommand("ping").ok' localhost:27017/test --quiet
+      interval: 5s
+      retries: 10
+      timeout: 10s
+        #entrypoint: [ "bash", "mongo-init.sh" ]
+
+networks:
+  my-network:
+    name: my-network
+
+volumes:
+  mongodb:
